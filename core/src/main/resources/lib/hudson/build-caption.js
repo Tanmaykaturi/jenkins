@@ -39,8 +39,17 @@
           }
         }
         rsp.text().then((responseText) => {
-          document.querySelector(".jenkins-build-caption svg").outerHTML =
-            responseText;
+          const svgElement = document.querySelector(".jenkins-build-caption svg");
+          if (svgElement && svgElement.parentNode) {
+            // Create a temporary container to safely parse the HTML
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = responseText;
+            const newSvg = tempDiv.querySelector('svg');
+            if (newSvg) {
+              // Replace the existing SVG with the new one
+              svgElement.parentNode.replaceChild(newSvg, svgElement);
+            }
+          }
           Behaviour.applySubtree(buildCaption, false);
         });
       }
