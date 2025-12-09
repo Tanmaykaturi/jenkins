@@ -241,15 +241,14 @@ public final class Permission {
         int idx = id.lastIndexOf('.');
         if (idx < 0)   return null;
 
-        try {
-            // force the initialization so that it will put all its permissions into the list.
-            Class cl = Class.forName(id.substring(0, idx), true, Jenkins.get().getPluginManager().uberClassLoader);
-            PermissionGroup g = PermissionGroup.get(cl);
-            if (g == null)  return null;
-            return g.find(id.substring(idx + 1));
-        } catch (ClassNotFoundException e) {
-            return null;
+        String className = id.substring(0, idx);
+        // Only search among known permission groups to prevent loading arbitrary classes
+        for (PermissionGroup g : PermissionGroup.getAll()) {
+            if (g.owner.getName().equals(className)) {
+                return g.find(id.substring(idx + 1));
+            }
         }
+        return null;
     }
 
     @Override
