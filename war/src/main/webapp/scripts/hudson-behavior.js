@@ -1014,12 +1014,13 @@ function renderOnDemand(e, callback, noBehaviour) {
     var contextTagName = e.parentNode.tagName;
     var c;
     if (contextTagName == "TBODY") {
-      c = document.createElement("DIV");
-      c.innerHTML = "<TABLE><TBODY>" + t.responseText + "</TBODY></TABLE>";
-      c = c./*JENKINS-15494*/ lastElementChild.firstElementChild;
+      var parser = new DOMParser();
+      var doc = parser.parseFromString("<TABLE><TBODY>" + t.responseText + "</TBODY></TABLE>", "text/html");
+      c = doc.body./*JENKINS-15494*/ lastElementChild.firstElementChild;
     } else {
-      c = document.createElement(contextTagName);
-      c.innerHTML = t.responseText;
+      var parser = new DOMParser();
+      var doc = parser.parseFromString("<" + contextTagName + ">" + t.responseText + "</" + contextTagName + ">", "text/html");
+      c = doc.body.firstElementChild;
     }
 
     var elements = [];
